@@ -132,20 +132,24 @@
 
         const getNextStateOn = (current_state, now) => {
             const nowMinutes = now.getMinutes();
+            let nextStart = 60;
             for ([start, state] of Object.entries(changePoints)) {
                 if (start > nowMinutes) {
-                    const nextState = new Date(now.getTime());
-                    nextState.setMinutes(start, 0, 0);
-                    return nextState;
+                    nextStart = start;
+                    break;
                 }
             }
+            const nextState = new Date(now.getTime());
+            
+            nextState.setMinutes(nextStart, 0, 0);
+            return nextState;
         }
 
         let current_state;
         const updateState = () => {
             const now = new Date();
             const new_state = getState(now, current_state);
-
+ 
             if (current_state !== new_state) {
                 if (current_state) {
                     sound.play();
@@ -156,13 +160,13 @@
 
             const countDownDate = getNextStateOn(current_state, now);
 
-            var distance = countDownDate - now;
+            const distance = countDownDate - now;
 
             // Time calculations for days, hours, minutes and seconds
-            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            let minsBox = document.getElementById("mins-box");
+            const minsBox = document.getElementById("mins-box");
             minsBox.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 
         }
