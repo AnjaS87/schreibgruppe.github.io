@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<title> Schreibgruppentimer </title>
+
+<head>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+            color: #ffffff;
+        }
+
+        body {
+            background-color: #111111;
+        }
+
+        .title {
+            display: flex;
+            justify-content: center;
+
+        }
+
+        .countdown {
+            width: 80vw;
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+        }
+
+        .box {
+            width: 28vmin;
+            height: 28vmin;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-evenly;
+            position: relative;
+            box-shadow: 15px 15px 30px rgba(0, 0, 0, 0.5);
+            font-size: 16px;
+        }
+
+        span.num {
+            background-color: #202020;
+            height: 100%;
+            width: 100%;
+            display: grid;
+            place-items: center;
+            font-weight: 600;
+            font-size: 5em;
+        }
+
+        span.text {
+            font-size: 1.2em;
+            background-color: #13599B;
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 0.5em 0;
+            font-weight: 400;
+        }
+
+        @media screen and (max-width: 768px) {
+            .countdown {
+                width: 90vw;
+                flex-wrap: wrap;
+                gap: 30px;
+            }
+
+            .box {
+                width: calc(50% - 40px);
+                height: 30vmin;
+                font-size: 14px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .countdown {
+                gap: 15px;
+            }
+
+            .box {
+                width: 100%;
+                height: 25vmin;
+                font-size: 12px;
+            }
+
+            .span.text {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="A simple timer for writing groups">
+</head>
+
+<body>
+    <h1 class="title" id="state"></h1>
+    <div class="countdown">
+        <div class="box">
+            <span class="num" id="mins-box">00:00</span>
+            <span class="text">remaining</span>
+        </div>
+    </div>
+    <script>
+        const sound = new Audio('dingdong.mp3');
+        sound.loop = false;
+
+        const changePoints = {
+            0: "break",
+            5: "write",
+            30: "break",
+            35: "write"
+        }
+
+        const getState = (date) => {
+            let minutes = date.getMinutes();
+            let current_state;
+            for ([start, state] of Object.entries(changePoints)) {
+                if (start <= minutes) {
+                    current_state = state;
+                }
+            }
+            return current_state;
+        }
+
+        const getNextStateOn = (current_state, now) => {
+            const nowMinutes = now.getMinutes();
+            for ([start, state] of Object.entries(changePoints)) {
+                if (start > nowMinutes) {
+                    const nextState = new Date(now.getTime());
+                    nextState.setMinutes(start, 0, 0);
+                    return nextState;
+                }
+            }
+        }
+
+        let current_state;
+        const updateState = () => {
+            const now = new Date();
+            const new_state = getState(now, current_state);
+
+            if (current_state !== new_state) {
+                if (current_state) {
+                    sound.play();
+                }
+                current_state = new_state;
+                document.getElementById("state").innerHTML = current_state;
+            }
+
+            const countDownDate = getNextStateOn(current_state, now);
+
+            var distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            let minsBox = document.getElementById("mins-box");
+            minsBox.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+
+        }
+        updateState();
+        setInterval(() => updateState(), 1000);
+    </script>
+</body>
+
+</html>
