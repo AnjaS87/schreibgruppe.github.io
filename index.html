@@ -55,14 +55,26 @@
             font-size: 5em;
         }
 
-        span.text {
+        span.statetextwork {
             font-size: 1.2em;
-            background-color: #13599B;
+            background-color: #E51070;
             display: block;
             width: 100%;
             text-align: center;
             padding: 0.5em 0;
             font-weight: 400;
+            font-size: 22px;
+        }
+
+        span.statetextbreak {
+            font-size: 1.2em;
+            background-color: #0D7D26;
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 0.5em 0;
+            font-weight: 400;
+            font-size: 22px;
         }
 
         @media screen and (max-width: 768px) {
@@ -101,11 +113,10 @@
 </head>
 
 <body>
-    <h1 class="title" id="state"></h1>
     <div class="countdown">
         <div class="box">
+            <span class="statetextwork" id="state"></span>
             <span class="num" id="mins-box">00:00</span>
-            <span class="text">remaining</span>
         </div>
     </div>
     <script>
@@ -140,7 +151,7 @@
                 }
             }
             const nextState = new Date(now.getTime());
-            
+
             nextState.setMinutes(nextStart, 0, 0);
             return nextState;
         }
@@ -149,13 +160,14 @@
         const updateState = () => {
             const now = new Date();
             const new_state = getState(now, current_state);
- 
+
             if (current_state !== new_state) {
                 if (current_state) {
                     sound.play();
                 }
                 current_state = new_state;
                 document.getElementById("state").innerHTML = current_state;
+                document.getElementById("state").className = current_state === 'write' ? 'statetextwork' : 'statetextbreak';
             }
 
             const countDownDate = getNextStateOn(current_state, now);
